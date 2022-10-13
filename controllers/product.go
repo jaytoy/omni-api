@@ -56,13 +56,27 @@ func (pc *ProductController) Create(c *gin.Context) {
 }
 
 // Find all products
-func ViewAll() {
+func (pc *ProductController) ViewAll(c *gin.Context) {
+	var products []models.Product
+	result := pc.DB.Find(&products)
 
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": "No products!"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": products})
 }
 
 // Find a product
-func ViewById() {
+func (pc *ProductController) ViewById(c *gin.Context) {
+	var product models.Product
+	result := pc.DB.First(&product, "id = ?", c.Param("id"))
 
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": "Product not found!"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": product})
 }
 
 func Edit() {

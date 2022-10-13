@@ -17,4 +17,6 @@ func (pr *ProductRoute) ProductRoute(rg *gin.RouterGroup) {
 	router := rg.Group("/products")
 
 	router.POST("/", pr.productController.Create)
+	router.GET("/", pr.productController.ViewAll)
+	router.GET("/:id", pr.productController.ViewById)
 }
