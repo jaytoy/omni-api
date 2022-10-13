@@ -12,6 +12,19 @@ import (
 	"gorm.io/gorm"
 )
 
+type SignUpInput struct {
+	FirstName       string `json:"first_name" binding:"required"`
+	LastName        string `json:"last_name" binding:"required"`
+	Email           string `json:"email" binding:"required"`
+	Password        string `json:"password" binding:"required,min=8"`
+	PasswordConfirm string `json:"password_confirm" binding:"required"`
+}
+
+type LoginInput struct {
+	Email    string `json:"email"  binding:"required"`
+	Password string `json:"password"  binding:"required"`
+}
+
 type AuthController struct {
 	DB *gorm.DB
 }
@@ -21,7 +34,7 @@ func NewAuthController(DB *gorm.DB) AuthController {
 }
 
 func (ac *AuthController) SignUp(c *gin.Context) {
-	var payload *models.SignUpInput
+	var payload SignUpInput
 
 	if err := c.ShouldBindJSON(&payload); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": err.Error()})
@@ -33,18 +46,14 @@ func (ac *AuthController) SignUp(c *gin.Context) {
 		return
 	}
 
-	hashedPassword := utils.HashPassword(payload.Password)
-
-	now := time.Now()
-
 	newUser := models.User{
 		FirstName: payload.FirstName,
 		LastName:  payload.LastName,
 		Email:     strings.ToLower(payload.Email),
-		Password:  hashedPassword,
+		Password:  utils.HashPassword(payload.Password),
 		Verified:  false,
-		CreatedAt: now,
-		UpdatedAt: now,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 
 	result := ac.DB.Create(&newUser)
@@ -111,7 +120,7 @@ func (ac *AuthController) VerifyEmail(c *gin.Context) {
 }
 
 func (ac *AuthController) Login(c *gin.Context) {
-	var payload *models.LoginInput
+	var payload LoginInput
 
 	if err := c.ShouldBindJSON(&payload); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": err.Error()})
