@@ -32,6 +32,6 @@ func init() {
 
 	DB = ConnectDB(&config)
 
-	DB.AutoMigrate(&models.User{})
+	DB.AutoMigrate(&models.User{}, &models.Product{})
 	fmt.Println("👍 Migration complete")
 }

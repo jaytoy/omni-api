@@ -12,9 +12,11 @@ import (
 )
 
 var (
-	server         *gin.Engine
-	AuthController controllers.AuthController
-	AuthRoute      routes.AuthRoute
+	server            *gin.Engine
+	AuthController    controllers.AuthController
+	AuthRoute         routes.AuthRoute
+	ProductController controllers.ProductController
+	ProductRoute      routes.ProductRoute
 )
 
 func init() {
@@ -27,6 +29,8 @@ func init() {
 
 	AuthController = controllers.NewAuthController(database.DB)
 	AuthRoute = routes.NewAuthRoute(AuthController)
+	ProductController = controllers.NewProductController(database.DB)
+	ProductRoute = routes.NewProductRoute(ProductController)
 
 	server = gin.Default()
 }
@@ -46,6 +50,7 @@ func main() {
 	router := server.Group("/api")
 
 	AuthRoute.AuthRoute(router)
+	ProductRoute.ProductRoute(router)
 	log.Fatal(server.Run(":" + config.ServerPort))
 
 }
