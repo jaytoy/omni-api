@@ -79,10 +79,42 @@ func (pc *ProductController) ViewById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": product})
 }
 
-func Edit() {
+// Update a product
+func (pc *ProductController) EditById(c *gin.Context) {
+	var payload *UpdateProductInput
+	if err := c.ShouldBindJSON(&payload); err != nil {
+		c.JSON(http.StatusBadGateway, gin.H{"status": "fail", "message": err.Error()})
+		return
+	}
+
+	var updatedProduct models.Product
+	result := pc.DB.First(&updatedProduct, "id = ?", c.Param("id"))
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": "Product not found!"})
+		return
+	}
+
+	productToUpdate := models.Product{
+		Name:      payload.Name,
+		Category:  payload.Category,
+		ImageURL:  payload.ImageURL,
+		Price:     payload.Price,
+		UpdatedAt: time.Now(),
+	}
+
+	pc.DB.Model(&updatedProduct).Updates(productToUpdate)
+
+	c.JSON(http.StatusOK, gin.H{"status": "success", "data": updatedProduct})
 
 }
 
-func Delete() {
+func (pc *ProductController) Delete(c *gin.Context) {
+	result := pc.DB.Delete(&models.Product{}, "id = ?", c.Param("id"))
 
+	if result.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No product with the given id exists"})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
 }

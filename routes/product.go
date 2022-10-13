@@ -19,4 +19,6 @@ func (pr *ProductRoute) ProductRoute(rg *gin.RouterGroup) {
 	router.POST("/", pr.productController.Create)
 	router.GET("/", pr.productController.ViewAll)
 	router.GET("/:id", pr.productController.ViewById)
+	router.PUT("/:id", pr.productController.EditById)
+	router.DELETE("/:id", pr.productController.Delete)
 }
