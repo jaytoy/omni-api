@@ -64,7 +64,7 @@ func (pc *ProductController) ViewAll(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": "No products!"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": products})
+	c.JSON(http.StatusOK, products)
 }
 
 // Find a product
